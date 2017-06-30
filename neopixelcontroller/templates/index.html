@@ -1,0 +1,318 @@
+<!doctype html>
+<html class="no-js" lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+        <title>NeoPixel Controller</title>
+
+        <meta name="description" content="A project to create a NeoPixel controller on a Raspberry Pi using a Web Server and GPIO.">
+        <meta name="author" content="Bradley Cornford">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <meta name="msapplication-TileColor" content="#ffffff">
+        <meta name="msapplication-TileImage" content="{{url_for('static', filename='icons/ms-icon-144x144.png')}}">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="apple-touch-icon" sizes="57x57" href="{{url_for('static', filename='icons/apple-icon-57x57.png')}}">
+        <link rel="apple-touch-icon" sizes="60x60" href="{{url_for('static', filename='icons/apple-icon-60x60.png')}}">
+        <link rel="apple-touch-icon" sizes="72x72" href="{{url_for('static', filename='icons/apple-icon-72x72.png')}}">
+        <link rel="apple-touch-icon" sizes="76x76" href="{{url_for('static', filename='icons/apple-icon-76x76.png')}}">
+        <link rel="apple-touch-icon" sizes="114x114" href="{{url_for('static', filename='icons/apple-icon-114x114.png')}}">
+        <link rel="apple-touch-icon" sizes="120x120" href="{{url_for('static', filename='icons/apple-icon-120x120.png')}}">
+        <link rel="apple-touch-icon" sizes="144x144" href="{{url_for('static', filename='icons/apple-icon-144x144.png')}}">
+        <link rel="apple-touch-icon" sizes="152x152" href="{{url_for('static', filename='icons/apple-icon-152x152.png')}}">
+        <link rel="apple-touch-icon" sizes="180x180" href="{{url_for('static', filename='icons/apple-icon-180x180.png')}}">
+        <link rel="icon" type="image/png" sizes="192x192"  href="{{url_for('static', filename='icons/android-icon-192x192.png')}}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{{url_for('static', filename='icons/favicon-32x32.png')}}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{{url_for('static', filename='icons/favicon-96x96.png')}}">
+        <link rel="icon" type="image/png" sizes="16x16" href="{{url_for('static', filename='icons/favicon-16x16.png')}}">
+        <link rel="manifest" href="{{url_for('static', filename='icons/manifest.json')}}">
+
+        <link href="{{url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+        <link href="{{url_for('static', filename='css/bootstrap-slider.min.css')}}" rel="stylesheet">
+        <link href="{{url_for('static', filename='css/main.css')}}" rel="stylesheet">
+
+    </head>
+
+    <body>
+
+        <div class="container">
+
+            <div class="row">
+
+                <div class="col-xs-12">
+
+                    <form method="POST" action="/" accept-charset="UTF-8" role="form">
+
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" id="red" name="red">
+                        <input type="hidden" id="green" name="green">
+                        <input type="hidden" id="blue" name="blue">
+
+                        <input type="hidden" id="brightness" name="brightness">
+
+                        <div class="row">
+
+                            <div class="col-xs-12">
+
+                                <div class="row">
+
+                                    <div class="col-xs-12">
+
+                                        <div id="color-picker" class="cp-normal">
+
+                                            <div class="picker-wrapper">
+
+                                                <div id="picker" class="picker"></div>
+                                                <div id="picker-indicator" class="picker-indicator"></div>
+
+                                            </div>
+
+                                            <div class="slide-wrapper">
+
+                                                <div id="slide" class="slide"></div>
+                                                <div id="slide-indicator" class="slide-indicator"></div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-xs-12">
+
+                                        <div class="form-group">
+
+                                            <label for="slider">Brightness</label>
+                                            <input id="slider" class="slider form-control" data-slider-id='slider' type="text" data-slider-min="0" data-slider-max="255" data-slider-step="1" data-slider-value="{{ brightness }}"/>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-xs-12">
+
+                                        <div class="form-group">
+
+                                            <label for="effect">Effect</label>
+                                            <select id="effect" name="effect" class="form-control">
+                                                <option>None</option>
+
+                                                {% for effect in effects %}
+                                                    <option value="{{effect}}">{{effect.replace('effect_', '').replace('_', ' ').title()}}</option>
+                                                {% endfor %}
+                                            </select>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-xs-12 text-right">
+
+                                        <a href="#" data-toggle="collapse" data-target="#advanced" class="text-light">
+
+                                            <span class="glyphicon glyphicon-option-horizontal"></span>
+
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row collapse" id="advanced">
+
+                                    <div class="col-xs-12">
+
+                                        <div class="form-group">
+
+                                            <label for="rgb">RGB</label>
+                                            <input type="text" class="form-control" id="rgb" name="rgb">
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label for="hsv">HSV</label>
+                                            <input type="text" class="form-control" id="hsv" name="hsv">
+
+                                        </div>
+
+                                        <div class="form-group">
+
+                                            <label for="hex">HEX</label>
+                                            <input type="text" class="form-control" id="hex" name="hex">
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="row">
+
+                                    <div class="col-xs-4 text-left">
+
+                                        <button class="btn btn-lg btn-danger" type="submit" name="submit" value="off">
+
+                                            <span class="glyphicon glyphicon-off"></span> Off
+
+                                        </button>
+
+                                    </div>
+
+                                    <div class="col-xs-4 text-center">
+
+                                        <button class="btn btn-default btn-lg" type="submit" name="submit" value="effect">
+
+                                            <span class="glyphicon glyphicon-tint"></span> Effect
+
+                                        </button>
+
+                                    </div>
+
+                                    <div class="col-xs-4 text-right">
+
+                                        <button class="btn btn-lg btn-primary" type="submit" name="submit" value="apply">
+
+                                            <span class="glyphicon glyphicon-lamp"></span> Apply
+
+                                        </button>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <script src="{{url_for('static', filename='js/jquery.min.js')}}" type="text/javascript"></script>
+        <script src="{{url_for('static', filename='js/bootstrap.min.js')}}" type="text/javascript"></script>
+        <script src="{{url_for('static', filename='js/bootstrap-slider.min.js')}}" type="text/javascript"></script>
+        <script src="{{url_for('static', filename='js/colorpicker.min.js')}}" type="text/javascript"></script>
+
+        <script type="text/javascript">
+            $(document).ready(
+                function ()
+                {
+                    var slider = new Slider(
+                        '#slider',
+                        {
+                            formatter: function(value) {
+                                document.getElementById('brightness').value = value;
+                                document.getElementById('picker').style.opacity = value / 255;
+
+                                red = document.getElementById('red').value;
+                                green = document.getElementById('green').value;
+                                blue = document.getElementById('blue').value;
+                                document.body.style.backgroundColor = 'rgba(' + red + ',' + green + ',' + blue + ',' + value / 255 + ')';
+
+                                return 'Current value: ' + value;
+                            }
+                        }
+                    );
+
+                    ColorPicker.fixIndicators(
+                        document.getElementById('slide-indicator'),
+                        document.getElementById('picker-indicator')
+                    );
+
+                    var colorpicker = ColorPicker(
+                        document.getElementById('slide'),
+                        document.getElementById('picker'),
+                        function (hex, hsv, rgb, mousePicker, mouseSlide) {
+                            currentColor = hex;
+
+                            ColorPicker.positionIndicators(
+                                document.getElementById('slide-indicator'),
+                                document.getElementById('picker-indicator'),
+                                mouseSlide,
+                                mousePicker
+                            );
+
+                            brightness = document.getElementById('brightness').value;
+
+                            document.body.style.backgroundColor = 'rgba(' + rgb.r.toFixed() + ',' + rgb.g.toFixed() + ',' + rgb.b.toFixed() + ',' + brightness / 255 + ')';
+                            document.getElementById('hex').value = hex;
+                            document.getElementById('rgb').value = 'rgb(' + rgb.r.toFixed() + ',' + rgb.g.toFixed() + ',' + rgb.b.toFixed() + ')';
+                            document.getElementById('hsv').value = 'hsv(' + hsv.h.toFixed() + ',' + hsv.s.toFixed(2) + ',' + hsv.v.toFixed(2) + ')';
+                            document.getElementById('red').value = rgb.r.toFixed();
+                            document.getElementById('green').value = rgb.g.toFixed();
+                            document.getElementById('blue').value = rgb.b.toFixed();
+
+                            document.getElementById('picker').style.opacity = brightness / 255;
+                        }
+                    );
+
+                    document.getElementById('hex').addEventListener(
+                        'keyup',
+                        function (e) {
+                            var code = (e.keyCode || e.which);
+
+                            if(code == 8 || code == 37 || code == 38 || code == 39 || code == 40 || code == 46) {
+                                return;
+                            }
+
+                            colorpicker.setHex(this.value);
+                        }
+                    );
+
+                    document.getElementById('rgb').addEventListener(
+                        'keyup',
+                        function (e) {
+                            var code = (e.keyCode || e.which);
+
+                            if(code == 8 || code == 37 || code == 38 || code == 39 || code == 40 || code == 46) {
+                                return;
+                            }
+
+                            rgb = this.value.replace('rgb(', '').replace(')', '').split(',');
+                            colorpicker.setRgb({ r: parseInt(rgb[0]), g: parseInt(rgb[1]), b: parseInt(rgb[2]) });
+                        }
+                    );
+
+                    document.getElementById('hsv').addEventListener(
+                        'keyup',
+                        function (e) {
+                            var code = (e.keyCode || e.which);
+
+                            if(code == 8 || code == 37 || code == 38 || code == 39 || code == 40 || code == 46) {
+                                return;
+                            }
+
+                            hsv = this.value.replace('hsv(', '').replace(')', '').split(',');
+                            colorpicker.setHsv({ h: parseInt(hsv[0]), s: parseFloat(hsv[1]), v: parseFloat(hsv[2]) });
+                        }
+                    );
+
+                    colorpicker.setHex('{{ color.get_hex() }}');
+                    slider.setValue({{ brightness }}).refresh();
+                }
+            );
+        </script>
+    </body>
+</html>

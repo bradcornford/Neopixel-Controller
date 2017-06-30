@@ -1,0 +1,112 @@
+html {
+    background-color: #000000;
+    height: 100%;
+}
+
+body {
+    height: 100%;
+}
+
+.row:first-child {
+    margin-bottom: 20px;
+}
+
+label, a {
+   text-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
+}
+
+button {
+   box-shadow: -1px -1px 0 #FFF, 1px -1px 0 #FFF, -1px 1px 0 #FFF, 1px 1px 0 #FFF;
+}
+
+.picker-wrapper {
+    background-color: #000000;
+}
+
+#color-picker {
+    position: relative;
+    width: 100%;
+}
+
+.picker-wrapper,
+.slide-wrapper {
+    position: relative;
+    float: left;
+}
+
+.picker-wrapper {
+    width: 80%;
+    height: 300px;
+}
+
+.slide-wrapper {
+    width: calc(20% - 10px);
+    height: 300px;
+}
+
+.picker-indicator,
+.slide-indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    pointer-events: none;
+}
+
+.picker,
+.slide {
+    cursor: crosshair;
+    float: left;
+}
+
+#color-picker {
+    padding: 10px;
+    background-color: white;
+    float: left;
+    border: 1px solid #ccc;
+    box-shadow: inset 0 0 10px white;
+}
+
+.picker {
+    width: 100%;
+    height: 100%;
+}
+
+.slide {
+    width: 100%;
+    height: 100%;
+}
+
+.slide-wrapper {
+    margin-left: 10px;
+}
+
+.picker-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    opacity: .6;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+    filter: alpha(opacity=60);
+    border: 4px solid gray;
+    background-color: white;
+    pointer-events: none;
+}
+
+.slide-indicator {
+    width: calc(100% + 7px);
+    height: 10px;
+    left: -4px;
+    opacity: .6;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=60);
+    filter: alpha(opacity=60);
+    border: 4px solid gray;
+    background-color: white;
+    pointer-events: none;
+}
+
+.slider.slider-horizontal  {
+    width: 100%;
+    clear: both;
+}
