@@ -10,13 +10,15 @@ try:
     from neopixel import Adafruit_NeoPixel as Adafruit_Neopixel
 except ImportError:
     print("[Neopixel][error] An error occurred importing 'neopixel.Adafruit_NeoPixel'")
-    mock = MagicMock()
-    mock.begin.return_value = True
-    mock.show.return_value = True
-    mock.setBrightness.return_value = True
-    mock.setPixelColor.return_value = True
-    with patch.dict('sys.modules', {'neopixel': mock, 'neopixel.Adafruit_NeoPixel': mock.Adafruit_NeoPixel}):
-        from neopixel import Adafruit_NeoPixel as Adafruit_Neopixel
+
+    from mocks.adafruit_neopixel_mock import AdafruitNeopixelMock as Adafruit_Neopixel
+    # mock = MagicMock()
+    # mock.begin.return_value = True
+    # mock.show.return_value = True
+    # mock.setBrightness.return_value = True
+    # mock.setPixelColor.return_value = True
+    # with patch.dict('sys.modules', {'neopixel': mock, 'neopixel.Adafruit_NeoPixel': mock.Adafruit_NeoPixel}):
+    #     from neopixel import Adafruit_NeoPixel as Adafruit_Neopixel
 
 
 class Controller:
@@ -124,7 +126,7 @@ class Controller:
         print("[Controller][info] Getting a list of NeoPixel effects")
 
         try:
-            effects = [file for file in os.listdir('./neopixelcontroller/lib/effects') if not file.startswith('.') and not file.startswith('__init__') and not file.endswith('.pyc') and not file.startswith('effect_test')]
+            effects = [file for file in os.listdir('./neopixelcontroller/lib/effects') if not file.startswith('.') and not file.startswith('__init__') and not file.endswith('.pyc') and not file.startswith('effect_template')]
 
             return [effect.replace('.py', '') for effect in effects]
         except AttributeError:
